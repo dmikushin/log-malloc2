@@ -26,7 +26,14 @@ add_subdirectory(examples)
 include(GNUInstallDirs)
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES include/${PROJECT_NAME}.h include/${PROJECT_NAME}_util.h DESTINATION include)
+
+install(PROGRAMS
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/log-malloc
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/log-malloc-trackusage
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/log-malloc-findleak
+    DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES include/${PROJECT_NAME}.h include/${PROJECT_NAME}_util.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
@@ -53,3 +60,4 @@ endif()
 
 configure_file(scripts/log-malloc.pm.in ${CMAKE_CURRENT_BINARY_DIR}/log-malloc.pm @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/log-malloc.pm DESTINATION ${PERL_INSTALL_PREFIX})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/scripts/backtrace2line.pl DESTINATION ${PERL_INSTALL_PREFIX})
