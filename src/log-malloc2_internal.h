@@ -15,38 +15,19 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
 
-#ifdef HAVE_STDBOOL_H
 #include <stdbool.h>
-#else
-#define bool uint8_t
-#define false 0
-#define true 1
-#endif
 
 /* pthreads support */
-#ifdef HAVE_LIBPTHREAD
 #include <pthread.h>
-#endif 
 
 /* pthread shortcuts */
-#ifdef HAVE_LIBPTHREAD
 # define LOCK_INIT()	1
 # define LOCK(lock)	(pthread_mutex_trylock(&(lock)) == 0)
 # define UNLOCK(lock)	(pthread_mutex_unlock(&(lock)))
-#else
-# define LOCK_INIT()	1
-# define LOCK(lock)	1
-# define UNLOCK(lock)	0
-#endif
-
 
 /* init constants */
 #define LOG_MALLOC_INIT_NULL		0xFAB321
@@ -72,9 +53,7 @@ typedef struct log_malloc_ctx_s {
 	int statm_fd;
 	bool memlog_disabled;
 	clock_t clock_start;
-#ifdef HAVE_LIBPTHREAD
 	pthread_mutex_t loglock;
-#endif
 } log_malloc_ctx_t;
 
 #define LOG_MALLOC_CTX_INIT_BASE		\
@@ -87,18 +66,11 @@ typedef struct log_malloc_ctx_s {
 		false,				\
 		0
 
-#ifdef HAVE_LIBPTHREAD
 #define LOG_MALLOC_CTX_INIT			\
 	{					\
 		LOG_MALLOC_CTX_INIT_BASE,	\
 		PTHREAD_MUTEX_INITIALIZER,	\
 	}
-#else
-#define LOG_MALLOC_CTX_INIT			\
-	{					\
-		LOG_MALLOC_CTX_INIT_BASE,	\
-	}
-#endif
 
 /* API function */
 log_malloc_ctx_t *log_malloc_ctx_get(void);

@@ -4,21 +4,20 @@ project(log-malloc2 VERSION 0.4.1 DESCRIPTION "${PROJECT_NAME}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(Unwind)
+find_package(Unwind REQUIRED)
+find_package(Backtrace REQUIRED)
+find_package(Threads REQUIRED)
 
 option(HAVE_UNWIND_DETAIL "Use libunwind detail" ON)
 
 add_library(${PROJECT_NAME} SHARED src/${PROJECT_NAME}_api.c src/${PROJECT_NAME}.c)
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${Backtrace_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-if(Unwind_FOUND)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_UNWIND)
-    target_link_libraries(${PROJECT_NAME} PRIVATE unwind::unwind)
-    if(HAVE_UNWIND_DETAIL)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_UNWIND_DETAIL)
-    endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_UNWIND HAVE_BACKTRACE HAVE_BACKTRACE_SYMBOLS_FD)
+target_link_libraries(${PROJECT_NAME} PRIVATE unwind::unwind ${Backtrace_LIBRARIES} Threads::Threads)
+if(HAVE_UNWIND_DETAIL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_UNWIND_DETAIL)
 endif()
 
 add_subdirectory(examples)
