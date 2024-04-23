@@ -50,13 +50,13 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <execinfo.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
 #include <malloc.h>
-#include <time.h>
 
 #ifdef HAVE_UNWIND
 /* speedup unwinding */

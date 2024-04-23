@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
 
 #ifdef HAVE_STDBOOL_H
 #include <stdbool.h>

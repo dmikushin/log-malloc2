@@ -1,3 +1,0 @@
-sudo: false
-language: c
-before_script: ./autogen.sh

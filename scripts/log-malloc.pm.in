@@ -16,11 +16,11 @@ package log_malloc::config;
 
 use strict;
 
-my $prefix	= "@prefix@";
-my $exec_prefix	= "@exec_prefix@";
-my $includedir	= "${prefix}/include";
-my $libdir	= "@libdir@";
-my $libexecdir	= "@libexecdir@";
+my $prefix	= "@CMAKE_INSTALL_PREFIX@";
+my $exec_prefix	= "@CMAKE_INSTALL_PREFIX@";
+my $includedir	= "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@";
+my $libdir	= "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@";
+my $libexecdir	= "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBEXECDIR@";
 
 #
 # shared funcs
