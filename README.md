@@ -1,13 +1,10 @@
-log-malloc2
-===========
+# log-malloc2: pre-loadable memory allocations tracker
 
 *log-malloc2* is **pre-loadable** library tracking all memory allocations of a program. It
 produces simple text trace output, that makes it easy to find leaks and also identify their origin.
 
-[![Build Status](https://travis-ci.org/samsk/log-malloc2.svg)](https://travis-ci.org/samsk/log-malloc2)
 
-
-# Features
+## Features
 
 - logging to file descriptor 1022 (if opened)
 - call stack **backtrace** (via GNU backtrace() or libunwind)
@@ -19,20 +16,35 @@ produces simple text trace output, that makes it easy to find leaks and also ide
 - optional **C API** for runtime memory usage checking
 
 
-# Usage
+## Building
 
-`log-malloc -o /tmp/program.log command args`
+```
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+
+## Usage
+
+```
+log-malloc -o /tmp/program.log command args ...
+```
 
 OR
 
-`LD_PRELOAD=./liblog-malloc2.so command args ... 1022>/tmp/program.log`
+```
+liblog-malloc command args ... 1022>/tmp/program.log
+```
 
-# Performance
+
+## Performance
 
 There is (non-)small performance penalty related to writing to logfile. One can improve this by redirecting write to tmpfs or similar fast-write filesystem. If log-malloc2 is compiled **without libunwind**, additionally a synchronization mutex is used while writing to logfile, thus every memory allocation is acting as giant synchronization lock (slowed down by write to logfile).
 
 
-# Helper scripts
+## Helper scripts
 
 - `backtrace2line`
   - Script to automatically convert backtrace in files and line numbers.
@@ -45,52 +57,52 @@ There is (non-)small performance penalty related to writing to logfile. One can 
   - Script to track program memory usage over time.
 
 
-# C API
+## C API
 
-- ```size_t log_malloc_get_usage(void)```
+- `size_t log_malloc_get_usage(void)`
   - Get actual program memory usage in bytes
 
-- ```void log_malloc_trace_enable(void)```
+- `void log_malloc_trace_enable(void)`
   - Enable trace messages to be printed to trace fd.
 
-- ```void log_malloc_trace_disable(void)```
+- `void log_malloc_trace_disable(void)`
   - Disable trace messages.
 
-- ```int log_malloc_trace_printf(const char *fmt, ...)```
+- `int log_malloc_trace_printf(const char *fmt, ...)`
   - Printf smth. to trace fd (message size is limited to 1024 bytes).
 
-- ```LOG_MALLOC_SAVE(name, trace)``` [MACRO]
+- `LOG_MALLOC_SAVE(name, trace)` [MACRO]
   - Creates savepoint with given _name_ that stores actual memory usage.
   - If _trace_ is true, message will be logged to trace fd.
 
-- ```LOG_MALLOC_UPDATE(name, trace)``` [MACRO]
+- `LOG_MALLOC_UPDATE(name, trace)` [MACRO]
   - Updates actual memory usage in savepoint with given _name_.
   - If _trace_ is true, trace message will be logged to trace fd.
 
-- ```LOG_MALLOC_COMPARE(name, trace)``` [MACRO]
+- `LOG_MALLOC_COMPARE(name, trace)` [MACRO]
   - Compares actual memory usage with the saved one under given _name_.
   - If _trace_ is true, trace message will be logged to trace fd.
   - Call returns memory usage difference (size_t).
 
-- ```LOG_MALLOC_ASSERT(name, iter)``` [MACRO]
+- `LOG_MALLOC_ASSERT(name, iter)` [MACRO]
   - ASSERT with fail, if actual memory usage differs from the one saved in savepoint.
   - _iter_ can specify that assertion should be checked first after given number of LOG_MALLOC_SAVE() iterations.
 
-- ```LOG_MALLOC_NDEBUG``` [MACRO]
+- `LOG_MALLOC_NDEBUG` [MACRO]
   - If defined, above macros will generate no code.
 
 
-# C INLINE API
+## C INLINE API
 
-- ```void log_malloc_backtrace_init(void)```
+- `void log_malloc_backtrace_init(void)`
   - Pre-initializes backtrace() function, to avoid later memory alocations. Use of this function is optional.
 
-- ```ssize_t log_malloc_backtrace(int fd)```
+- `ssize_t log_malloc_backtrace(int fd)`
   - Generate current backtrace including process memory map (/proc/self/maps) to make backtrace symbol conversion easier.
   - Generated output can be directly pasted to _backtrace2line_ script.
 
 
-# Author
+## Author
 
 - ***Samuel Behan***
   - **contact**: samuel(dot)behan(at)dob(dot)sk
@@ -98,21 +110,21 @@ There is (non-)small performance penalty related to writing to logfile. One can 
   - **projects**: [http://devel.dob.sk](http://devel.dob.sk?u=github)
 
 
-# Licensing
+## Licensing
 
 * [LGPLv3](https://www.gnu.org/licenses/lgpl.html) for C code (library)
 * [GPLv3](https://www.gnu.org/licenses/gpl.html) for Perl code (scripts)
 
 
-# See Also
+## See Also
 
 * More/Detailed info in project [README](README)
 * Project home: [http://devel.dob.sk/log-malloc2](http://devel.dob.sk/log-malloc2?u=github)
 
 
-# Examples
+## Examples
 
-###Example Trace Output
+Example Trace Output:
 
     $ log-malloc -o - ./examples/leak-01
 
@@ -184,9 +196,9 @@ There is (non-)small performance penalty related to writing to logfile. One can 
     7fffb54cf000-7fffb54d1000 r-xp 00000000 00:00 0                          [vdso]
     ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
 
-###Example leak
+Example leak:
 
-    $ ./scripts/log-malloc-findleak.pl /tmp/lm2.trace
+    $ log-malloc-findleak /tmp/lm2.trace
     SUSPECTED 1 LEAKS:
      0x7f4688a04000 leaked 100 bytes (0.10 KiB) allocated by malloc (line: 1)
            FUNCTION             FILE                      SYMBOL
